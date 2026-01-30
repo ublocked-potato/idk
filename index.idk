@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>My Movie Hub</title>
+  <title>My Movies (Any Source)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * {
@@ -62,24 +62,17 @@
       font-weight: bold;
     }
 
-    .movie-image {
-      width: 100%;
-      max-height: 260px;
-      object-fit: cover;
-      border-radius: 4px;
-      border: 1px solid #333;
-    }
-
     .movie-video {
       position: relative;
       width: 100%;
-      padding-bottom: 56.25%; /* 16:9 ratio */
+      padding-bottom: 56.25%; /* 16:9 */
       border-radius: 4px;
       overflow: hidden;
       border: 1px solid #333;
     }
 
-    .movie-video iframe {
+    .movie-video iframe,
+    .movie-video video {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -90,73 +83,102 @@
     .movie-meta {
       font-size: 0.85rem;
       color: #bbb;
-    }
-
-    @media (max-width: 600px) {
-      header h1 {
-        font-size: 1.5rem;
-      }
+      word-break: break-all;
     }
   </style>
 </head>
 <body>
   <header>
     <h1>My Movie Hub</h1>
-    <p>Click a movie to watch. More movies coming soon.</p>
+    <p>Edit one list in the code to add more movies from any site.</p>
   </header>
 
   <main class="container">
-    <section class="movies-grid">
-      <!-- Ant-Man -->
-      <article class="movie-card">
-        <div class="movie-title">Ant-Man</div>
-
-        <!-- Optional image poster – replace src with your image link -->
-        <img
-          class="movie-image"
-          src="https://via.placeholder.com/500x260?text=Ant-Man+Poster"
-          alt="Ant-Man poster"
-        />
-
-        <!-- Google Drive embed -->
-        <div class="movie-video">
-          <iframe
-            src="https://drive.google.com/file/d/1_qJqk2Ss1f45puz3xGQcdD1NxM3ipupj/preview"
-            allow="autoplay"
-            allowfullscreen
-          ></iframe>
-        </div>
-
-        <div class="movie-meta">
-          Source: Google Drive (make sure sharing is set to “Anyone with the link – Viewer”).
-        </div>
-      </article>
-
-      <!-- Avengers: Endgame -->
-      <article class="movie-card">
-        <div class="movie-title">Avengers: Endgame</div>
-
-        <!-- Optional image poster – replace src with your image link -->
-        <img
-          class="movie-image"
-          src="https://via.placeholder.com/500x260?text=Avengers+Endgame+Poster"
-          alt="Avengers: Endgame poster"
-        />
-
-        <!-- Google Drive embed -->
-        <div class="movie-video">
-          <iframe
-            src="https://drive.google.com/file/d/1UsxNtlBxGFp955GwEB-s8wYJCA6bXt7e/preview"
-            allow="autoplay"
-            allowfullscreen
-          ></iframe>
-        </div>
-
-        <div class="movie-meta">
-          Source: Google Drive (make sure sharing is set to “Anyone with the link – Viewer”).
-        </div>
-      </article>
+    <section id="movies" class="movies-grid">
+      <!-- Movies will be injected here -->
     </section>
   </main>
+
+  <script>
+    // === EDIT ONLY THIS PART TO ADD MOVIES ===
+    // Put the FULL embed URL you would normally use inside an <iframe>.
+    //
+    // Examples:
+    // YouTube watch link:  https://www.youtube.com/watch?v=VIDEO_ID
+    // YouTube embed link:  https://www.youtube.com/embed/VIDEO_ID
+    //
+    // Google Drive view:   https://drive.google.com/file/d/FILE_ID/view
+    // Google Drive embed:  https://drive.google.com/file/d/FILE_ID/preview
+    //
+    // Vimeo:               https://player.vimeo.com/video/VIDEO_ID
+    //
+    // Direct MP4 file:     use type: "video" and the direct .mp4 URL.
+
+    const movies = [
+      {
+        name: "Ant-Man (Drive)",
+        type: "iframe",
+        embedUrl: "https://drive.google.com/file/d/1_qJqk2Ss1f45puz3xGQcdD1NxM3ipupj/preview"
+      },
+      {
+        name: "Avengers: Endgame (Drive)",
+        type: "iframe",
+        embedUrl: "https://drive.google.com/file/d/1UsxNtlBxGFp955GwEB-s8wYJCA6bXt7e/preview"
+      },
+      // Example YouTube (replace VIDEO_ID):
+      // {
+      //   name: "Some YouTube Trailer",
+      //   type: "iframe",
+      //   embedUrl: "https://www.youtube.com/embed/VIDEO_ID"
+      // },
+      // Example direct MP4:
+      // {
+      //   name: "My MP4 File",
+      //   type: "video",
+      //   embedUrl: "https://example.com/path/to/video.mp4"
+      // }
+    ];
+    // === STOP EDITING HERE ===
+
+    const moviesContainer = document.getElementById("movies");
+
+    movies.forEach(movie => {
+      const card = document.createElement("article");
+      card.className = "movie-card";
+
+      let playerHtml = "";
+
+      if (movie.type === "video") {
+        // Use <video> tag for direct file URLs (mp4, webm, etc.)
+        playerHtml = `
+          <video controls>
+            <source src="${movie.embedUrl}" />
+            Your browser does not support the video tag.
+          </video>
+        `;
+      } else {
+        // Default: treat as iframe embed URL
+        playerHtml = `
+          <iframe
+            src="${movie.embedUrl}"
+            allow="autoplay; encrypted-media"
+            allowfullscreen
+          ></iframe>
+        `;
+      }
+
+      card.innerHTML = `
+        <div class="movie-title">${movie.name}</div>
+        <div class="movie-video">
+          ${playerHtml}
+        </div>
+        <div class="movie-meta">
+          Source: ${movie.embedUrl}
+        </div>
+      `;
+
+      moviesContainer.appendChild(card);
+    });
+  </script>
 </body>
 </html>
